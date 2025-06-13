@@ -1,0 +1,197 @@
+services:
+  front:
+    image: bank/front
+    build:
+      context: front
+      dockerfile: ./Dockerfile
+    environment:
+      - spring.cloud.consul.host=consul
+      - spring.cloud.config.enabled=true
+    depends_on:
+      - consul
+      - keycloak
+      - account
+      - cash
+      - transfer
+
+  account:
+    image: bank/account
+    build:
+      context: account
+      dockerfile: ./Dockerfile
+    environment:
+      - spring.cloud.consul.host=consul
+      - spring.cloud.config.enabled=true
+    depends_on:
+      - consul
+      - notification
+      - keycloak
+      - db
+
+  gateway:
+    image: bank/gateway
+    build:
+      context: gateway
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - spring.cloud.consul.host=consul
+    depends_on:
+      - consul
+      - keycloak
+      - front
+
+  cash:
+    image: bank/cash
+    build:
+      context: cash
+      dockerfile: ./Dockerfile
+    environment:
+      - spring.cloud.consul.host=consul
+      - spring.cloud.config.enabled=true
+    depends_on:
+      - consul
+      - keycloak
+      - account
+      - notification
+      - blocker
+
+  blocker:
+    image: bank/blocker
+    build:
+      context: blocker
+      dockerfile: ./Dockerfile
+    environment:
+      - spring.cloud.consul.host=consul
+    depends_on:
+      - consul
+      - keycloak
+
+  exchange:
+    image: bank/exchange
+    build:
+      context: exchange
+      dockerfile: ./Dockerfile
+    ports:
+      - 8123:8092
+    environment:
+      - spring.cloud.consul.host=consul
+    depends_on:
+      - consul
+      - exchange-generator
+      - keycloak
+
+  exchange-generator:
+    image: bank/exchange-generator
+    build:
+      context: exchange-generator
+      dockerfile: ./Dockerfile
+    environment:
+      - spring.cloud.consul.host=consul
+      - spring.cloud.config.enabled=true
+    depends_on:
+      - consul
+      - keycloak
+
+  notification:
+    image: bank/notification
+    build:
+      context: notification
+      dockerfile: ./Dockerfile
+    environment:
+      - spring.cloud.consul.host=consul
+    depends_on:
+      - consul
+      - keycloak
+
+  transfer:
+    image: bank/transfer
+    build:
+      context: cash
+      dockerfile: ./Dockerfile
+    environment:
+      - spring.cloud.consul.host=consul
+      - spring.cloud.config.enabled=true
+    depends_on:
+      - consul
+      - keycloak
+      - account
+      - notification
+      - blocker
+      - exchange
+
+  consul:
+    image: hashicorp/consul:1.21
+    container_name: consul
+    volumes:
+      - ./consul-volume:/consul/data
+    ports:
+      - 8500:8500
+    command: 'agent -server -bootstrap-expect=1 -ui -bind=0.0.0.0 -client=0.0.0.0'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8500/v1/status/leader" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      keycloak:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-bullseye
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: account
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+        - "5430:5432"
+    volumes:
+        - ./pgdata:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres_user -d postgres_db" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+#  consul-importer:
+#    image: curlimages/curl:latest
+#    container_name: consul-importer
+#    depends_on:
+#      consul:
+#        condition: service_healthy
+#    volumes:
+#      - ./kv.json:/data/kv.json
+#    command: >
+#      sh -c '
+#      echo "Импорт данных в Consul...";
+#      curl --request PUT \
+#           --data-binary @/data/kv.json \
+#           http://consul:8500/v1/kv/config;
+#      echo "Импорт завершен!"'
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.3
+    container_name: keycloak
+    ports:
+      - "8082:8080"
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+    command:
+      - start-dev
+      - --import-realm
+      - /opt/keycloak/data/import/realm-export.json
+
+    volumes:
+      - ./realms:/opt/keycloak/data/import
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        'exec 3<>/dev/tcp/localhost/8080; echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\n" >&3; timeout --preserve-status 1 cat <&3 | grep -m 1 status | grep -m 1 UP; ERROR=$?; exec 3<&-; exec 3>&-; exit $ERROR'
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
