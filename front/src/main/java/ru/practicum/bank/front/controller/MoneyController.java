@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriUtils;
 import ru.practicum.bank.front.client.dto.OperationResult;
 import ru.practicum.bank.front.domain.CashAction;
+import ru.practicum.bank.front.service.MoneyException;
 import ru.practicum.bank.front.service.MoneyService;
 
 import java.util.Currency;
@@ -23,22 +25,35 @@ public class MoneyController {
         this.moneyService = moneyService;
     }
 
-    @PostMapping("/user/{username}/сash")
+    @PostMapping("/user/{username}/cash")
     public String putCash(@PathVariable String username, @RequestParam Double amount, @RequestParam long accountId , @RequestParam CashAction action) {
         OperationResult result = moneyService.cash(accountId, amount, action);
-        return "redirect:"+gatewayHost+"/cashErrors="+result.getErrorMessage();
+        if (result.getErrorMessage() == null) {
+            return "redirect:"+gatewayHost+"/";
+        }
+        return "redirect:"+gatewayHost+"/?cashErrors="+UriUtils.encodePath(result.getErrorMessage(), "UTF-8");
     }
 
     @PostMapping("/user/{login}/transfer")
     public String transfer(@PathVariable String login, @RequestParam Long fromAccountId, @RequestParam Currency toCurrency, @RequestParam String username,  @RequestParam Double amount) {
-        OperationResult result = moneyService.transfer(fromAccountId,username, toCurrency, amount);
-        return "redirect:"+gatewayHost+"/?transferErrors="+result.getErrorMessage();
+        try {
+            OperationResult result = moneyService.transfer(fromAccountId,username, toCurrency, amount);
+            if (result.getErrorMessage() == null) {
+                return "redirect:" + gatewayHost + "/";
+            }
+                return "redirect:" + gatewayHost + "/?transferErrors=" + UriUtils.encodePath(result.getErrorMessage(), "UTF-8");
+            } catch (MoneyException e) {
+                return "redirect:" + gatewayHost + "/?transferErrors=" + UriUtils.encodePath(e.getMessage(), "UTF-8");
+            }
     }
 
     @PostMapping("/user/{login}/self-transfer")
     public String selfTransfer(@PathVariable String login, @RequestParam Long fromAccountId, @RequestParam Long toAccountId,  @RequestParam Double value) {
         OperationResult result = moneyService.transfer(fromAccountId,toAccountId, value);
-        return "redirect:"+gatewayHost+"/?transferErrors="+result.getErrorMessage();
+        if (result.getErrorMessage() == null) {
+            return "redirect:"+gatewayHost+"/";
+        }
+        return "redirect:"+gatewayHost+"/?transferErrors="+ UriUtils.encodePath(result.getErrorMessage(), "UTF-8");
     }
 
 }

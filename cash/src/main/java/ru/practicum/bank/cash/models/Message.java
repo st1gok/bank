@@ -16,6 +16,15 @@ public class Message {
         return this;
     }
 
+    public Recipient getRecipient() {
+        return recipient;
+    }
+
+    public Message setRecipient(Recipient recipient) {
+        this.recipient = recipient;
+        return this;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -25,7 +34,7 @@ public class Message {
         return this;
     }
 
-    public class Recipient {
+    public static class Recipient {
 
 
         private String email;

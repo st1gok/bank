@@ -17,7 +17,7 @@ public class CashRest {
     }
 
     @PostMapping("/api/v1/cash")
-    public OperationResult cashProcessing(@RequestBody CashDto cashDto) {
+    public OperationResult cashProcessing(@RequestBody CashDto cashDto) throws Exception {
         return cashProccesingService.cashProcessing(cashDto);
     }
 }

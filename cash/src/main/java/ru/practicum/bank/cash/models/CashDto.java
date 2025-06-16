@@ -5,6 +5,16 @@ public class CashDto {
     Double amount;
     String currency;
     CashAction action;
+    UserData user;
+
+    public UserData getUser() {
+        return user;
+    }
+
+    public CashDto setUser(UserData user) {
+        this.user = user;
+        return this;
+    }
 
     public CashAction getAction() {
         return action;
@@ -42,3 +52,4 @@ public class CashDto {
         return this;
     }
 }
+

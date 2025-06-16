@@ -1,15 +1,20 @@
 package ru.practicum.bank.front.domain;
 
+import jakarta.validation.constraints.Email;
+import ru.practicum.bank.front.validation.AgeLimit;
+
 import java.time.LocalDate;
 
 public class RegistrationRequest {
     private String login;
     private String password;
+
     private String name;
+    @Email
     private String email;
 
     private String surname;
-
+    @AgeLimit
     private LocalDate birthday;
 
     public String getEmail() {

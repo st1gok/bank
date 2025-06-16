@@ -39,13 +39,19 @@ public class UserServiceImpl implements UserService {
 
         user.setAccount(new Account().setName(request.getName())
                 .setBirthday(request.getBirthday())
-                .setSurname(request.getSurname()));
+                .setSurname(request.getSurname())
+                .setEmail(request.getEmail()));
+
         userRepository.save(user);
     }
 
     public void updateAccount(AccountDto accountDto, String login) {
         var user = userRepository.findByLogin(login).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        user.setAccount(accountMapper.toEntity(accountDto));
+        var account = user.getAccount();
+        account.setEmail(accountDto.getEmail());
+        account.setBirthday(accountDto.getBirthday());
+        account.setName(accountDto.getName());
+        account.setSurname(accountDto.getSurname());
         userRepository.save(user);
     }
 

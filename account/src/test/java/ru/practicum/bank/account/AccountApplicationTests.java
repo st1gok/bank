@@ -31,7 +31,7 @@ class AccountApplicationTests {
 	private static final String DATABASE_NAME = "account";
 
 	@Container
-	public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17")
+	public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17-bullseye")
 			.withReuse(true)
 			.withDatabaseName(DATABASE_NAME);
 

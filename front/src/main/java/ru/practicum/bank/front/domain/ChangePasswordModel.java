@@ -1,9 +1,15 @@
 package ru.practicum.bank.front.domain;
 
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import ru.practicum.bank.front.validation.FieldsValueMatch;
 
+//@FieldsValueMatch(field = "password", fieldMatch = "confirmPassword", message = "Passwords do not match")
 public class ChangePasswordModel {
+
+    @NotBlank
     private String password;
+    @NotBlank
     private String confirmPassword;
 
     public String getPassword() {

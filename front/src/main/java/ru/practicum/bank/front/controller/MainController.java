@@ -38,6 +38,7 @@ public class MainController {
         model.addAttribute("birthdate", userData.getBirthday());
         model.addAttribute("login", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
+        model.addAttribute("email", userData.getEmail());
         model.addAttribute("currency", currency);
         model.addAttribute("accounts", accounts);
         model.addAttribute("users", users);

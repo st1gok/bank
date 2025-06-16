@@ -15,7 +15,7 @@ public class NotificationRest {
         this.notificationService = notificationService;
     }
 
-    @PostMapping("/notify")
+    @PostMapping("/api/v1/notify")
     public void notify(@RequestBody Message message) {
         notificationService.notify(message);
     }

@@ -28,7 +28,6 @@ public class ExchangeRateRest {
     }
 
     @PostMapping("/rates")
-    @Secured({})
     public void postRate(@RequestBody List<Rate> rates) {
         exchangeRateService.save(rates);
     }

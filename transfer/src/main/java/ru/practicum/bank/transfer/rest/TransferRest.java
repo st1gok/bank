@@ -17,7 +17,7 @@ public class TransferRest {
     }
 
     @PostMapping("/api/v1/transfer")
-    public OperationResult cashProcessing(@RequestBody TransferDto transferDto) {
+    public OperationResult cashProcessing(@RequestBody TransferDto transferDto) throws Exception {
         return transferProccesingService.transferProcessing(transferDto);
     }
 }

@@ -37,7 +37,7 @@ public class MoneyService {
         var accounts = accountsService.getUserAccounts(username);
         var sender = userService.getCurrentUserData();
         var receiver = userService.getUserData(username);
-        var acc = accounts.stream().filter(accountModel -> accountModel.getCurrency().equals(destCurrency)).findFirst().orElseThrow(() -> new RuntimeException("Пользователь не имеет открытого счета с данной валютой"));
+        var acc = accounts.stream().filter(accountModel -> accountModel.getCurrency().equals(destCurrency)).findFirst().orElseThrow(() -> new MoneyException("Пользователь не имеет открытого счета с данной валютой"));
         return transferClient.transfer(fromAccount,sender, receiver, acc.getId(), amount);
     }
 }

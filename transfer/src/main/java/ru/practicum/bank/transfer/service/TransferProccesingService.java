@@ -1,6 +1,10 @@
 package ru.practicum.bank.transfer.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.practicum.bank.transfer.client.AccountClient;
 import ru.practicum.bank.transfer.client.BlockerClient;
 import ru.practicum.bank.transfer.client.ExchangeClient;
@@ -18,15 +22,21 @@ public class TransferProccesingService {
     BlockerClient blockerClient;
     NotificationClient notificationClient;
     ExchangeClient exchangeClient;
+    private final ObjectMapper objectMapper;
 
-    public TransferProccesingService(AccountClient accountClient, BlockerClient blockerClient, NotificationClient notificationClient, ExchangeClient exchangeClient) {
+    public TransferProccesingService(AccountClient accountClient,
+                                     BlockerClient blockerClient,
+                                     NotificationClient notificationClient,
+                                     ExchangeClient exchangeClient,
+                                     ObjectMapper objectMapper) {
         this.accountClient = accountClient;
         this.blockerClient = blockerClient;
         this.notificationClient = notificationClient;
         this.exchangeClient = exchangeClient;
+        this.objectMapper = objectMapper;
     }
 
-    public OperationResult transferProcessing(TransferDto transferDto) {
+    public OperationResult transferProcessing(TransferDto transferDto) throws Exception {
         Check check = blockerClient.checkOperation(transferDto);
         String currentCurrency = accountClient.getBankAccountCurrency(transferDto.getFromAccount());
         String destCurrency = accountClient.getBankAccountCurrency(transferDto.getToAccount());
@@ -41,19 +51,23 @@ public class TransferProccesingService {
                     .setCaption("Операция была заблокирована")
                     .setMessage("Операция показалась подозрительной");
             notificationClient.notify(message);
-           return new OperationResult().setErrorMessage("Операция была заблокирована").setStatus(400);
+            return new OperationResult().setErrorMessage("Операция была заблокирована").setStatus(400);
         } else {
-            OperationResult result =  accountClient.transfer(transferDto);
-            var recipient = new Message.Recipient().setEmail(transferDto.getReceiver().getEmail());
-            var message = new Message().setRecipient(recipient)
-                    .setCaption("Пополнение баланса счета")
-                    .setMessage("Операция показалась подозрительной");
-            notificationClient.notify(message);
-            return result;
+            try {
+                OperationResult result = accountClient.transfer(transferDto);
+                var recipient = new Message.Recipient().setEmail(transferDto.getReceiver().getEmail());
+                var message = new Message().setRecipient(recipient)
+                        .setCaption("Пополнение баланса счета")
+                        .setMessage("Счет успешно пополнен");
+                notificationClient.notify(message);
+                return result;
+            } catch (HttpClientErrorException e) {
+                return objectMapper.readValue(e.getResponseBodyAsString(), OperationResult.class);
+            }
         }
     }
 
-    private Double convertValue(String currentCurrency,  String destCurrency, Double amount) {
+    private Double convertValue(String currentCurrency, String destCurrency, Double amount) {
         Map<String, Rate> rates = exchangeClient.getRates().stream().collect(Collectors.toMap(Rate::getName, Function.identity()));
         var value = amount;
         if (!currentCurrency.equals("RUB")) {
