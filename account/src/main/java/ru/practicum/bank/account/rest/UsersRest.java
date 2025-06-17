@@ -23,14 +23,6 @@ public class UsersRest {
         this.accountService = accountService;
     }
 
-//    @PostMapping("/api/v1/authenticate")
-//    public ResponseEntity<UserDto> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-//        if (userService.authenticate(authenticationRequest)) {
-//            return ResponseEntity.ok().build();
-//        }
-//        return ResponseEntity.status(401).build();
-//    }
-
     @GetMapping("/api/v1/users")
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());

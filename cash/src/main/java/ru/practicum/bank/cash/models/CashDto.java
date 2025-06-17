@@ -1,11 +1,11 @@
 package ru.practicum.bank.cash.models;
 
 public class CashDto {
-    Long account;
-    Double amount;
-    String currency;
-    CashAction action;
-    UserData user;
+    private Long account;
+    private Double amount;
+    private String currency;
+    private CashAction action;
+    private UserData user;
 
     public UserData getUser() {
         return user;

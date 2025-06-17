@@ -10,7 +10,7 @@ import java.util.Random;
 @Service
 public class OperationCheckServiceFake implements OperationCheckService {
 
-    Random random = new Random();
+    private final Random random = new Random();
 
     @Override
     public Check checkOperation(CashDto cashDto) {

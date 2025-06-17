@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class AccountsServiceImpl implements AccountsService {
 
-    private AccountClient accountClient;
+    private final AccountClient accountClient;
 
     public AccountsServiceImpl(AccountClient accountClient) {
         this.accountClient = accountClient;

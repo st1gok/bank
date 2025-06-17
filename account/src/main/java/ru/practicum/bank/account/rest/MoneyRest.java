@@ -11,7 +11,7 @@ import ru.practicum.bank.account.service.MoneyProccessingService;
 @RequestMapping("/api/v1/money")
 public class MoneyRest {
 
-    MoneyProccessingService moneyProccessingService;
+    private final MoneyProccessingService moneyProccessingService;
 
     public MoneyRest(MoneyProccessingService moneyProccessingService) {
         this.moneyProccessingService = moneyProccessingService;

@@ -10,7 +10,7 @@ import ru.practicum.bank.account.service.AccountService;
 @RestController
 public class BankAccountRest {
 
-    AccountService accountService;
+    private final AccountService accountService;
 
     public BankAccountRest(AccountService accountService) {
         this.accountService = accountService;

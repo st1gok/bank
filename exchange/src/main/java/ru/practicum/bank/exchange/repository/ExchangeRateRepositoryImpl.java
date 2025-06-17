@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Repository
 public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
-    Map<String, Rate> exchangeRates = new HashMap<>();
+    private final Map<String, Rate> exchangeRates = new HashMap<>();
 
     public void saveAll(List<Rate> rates) {
         rates.forEach(exchangeRate ->

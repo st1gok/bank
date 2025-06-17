@@ -12,12 +12,13 @@ import java.util.List;
 @RefreshScope
 public class ExchangeClient {
 
-    @Value("${exchange.host}")
-    private String host;
+//    @Value("${exchange.host}")
+    private final String host;
 
     private final RestTemplate restTemplate;
 
-    public ExchangeClient(RestTemplate restTemplate) {
+    public ExchangeClient(@Value("${exchange.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

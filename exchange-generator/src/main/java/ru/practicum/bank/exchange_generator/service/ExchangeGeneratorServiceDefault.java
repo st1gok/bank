@@ -1,8 +1,6 @@
 package ru.practicum.bank.exchange_generator.service;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import ru.practicum.bank.exchange_generator.client.ExchangeClient;
 import ru.practicum.bank.exchange_generator.domain.Rate;
 
 import java.util.ArrayList;
@@ -13,12 +11,6 @@ import java.util.Random;
 
 @Service
 public class ExchangeGeneratorServiceDefault implements ExchangeGeneratorService {
-
-    private final ExchangeClient client;
-
-    public ExchangeGeneratorServiceDefault(ExchangeClient client) {
-        this.client = client;
-    }
 
     @Override
     public List<Rate> generate() {
@@ -35,9 +27,4 @@ public class ExchangeGeneratorServiceDefault implements ExchangeGeneratorService
                 .getAsInt();
     }
 
-    @Scheduled(initialDelay = 5000, fixedDelay = 1000)
-    public void publish() {
-        var currencies = generate();
-        client.publish(currencies);
-    }
 }

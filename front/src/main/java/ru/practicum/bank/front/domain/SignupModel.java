@@ -1,12 +1,15 @@
 package ru.practicum.bank.front.domain;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import ru.practicum.bank.front.validation.AgeLimit;
 
 import java.time.LocalDate;
 
 public class SignupModel extends ChangePasswordModel {
+    @NotBlank
     private String login;
+    @NotBlank
     private String name;
     @Email
     private String email;

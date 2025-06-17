@@ -1,6 +1,5 @@
 package ru.practicum.bank.exchange.rest;
 
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.bank.exchange.domain.Rate;
 import ru.practicum.bank.exchange.service.ExchangeRateService;

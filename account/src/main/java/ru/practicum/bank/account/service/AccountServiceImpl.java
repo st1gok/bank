@@ -10,13 +10,12 @@ import ru.practicum.bank.account.rest.mappers.BankAccountMapper;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 
-    UserRepository userRepository;
-    BankAccountRepository bankAccountRepository;
+    private final UserRepository userRepository;
+    private final BankAccountRepository bankAccountRepository;
     private final BankAccountMapper bankAccountMapper;
 
     public AccountServiceImpl(UserRepository userRepository, BankAccountMapper bankAccountMapper, BankAccountRepository bankAccountRepository) {

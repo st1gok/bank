@@ -1,6 +1,5 @@
 package ru.practicum.bank.front.controller;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +14,8 @@ import java.util.List;
 @Controller
 public class MainController {
 
-    UserService userService;
-    AccountsService accountsService;
+    private final UserService userService;
+    private final AccountsService accountsService;
 
     public MainController(UserService userService, AccountsService accountsService) {
         this.userService = userService;
@@ -42,7 +41,6 @@ public class MainController {
         model.addAttribute("currency", currency);
         model.addAttribute("accounts", accounts);
         model.addAttribute("users", users);
-
 
         return "main";
     }

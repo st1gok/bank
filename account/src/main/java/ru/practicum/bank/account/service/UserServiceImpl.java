@@ -1,10 +1,11 @@
 package ru.practicum.bank.account.service;
 
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import ru.practicum.bank.account.client.NotificationClient;
 import ru.practicum.bank.account.domain.Account;
+import ru.practicum.bank.account.rest.dto.MessageDto;
 import ru.practicum.bank.account.domain.User;
 import ru.practicum.bank.account.repository.UserRepository;
 import ru.practicum.bank.account.rest.dto.AccountDto;
@@ -22,14 +23,20 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
     private final AccountMapper accountMapper;
-    private UserRepository userRepository;
+    private final NotificationClient notificationClient;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, UserMapper userMapper, AccountMapper accountMapper) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder,
+                           UserRepository userRepository,
+                           UserMapper userMapper,
+                           AccountMapper accountMapper,
+                           NotificationClient notificationClient) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.accountMapper = accountMapper;
+        this.notificationClient = notificationClient;
     }
 
     public void register(RegistrationRequest request) {
@@ -43,6 +50,14 @@ public class UserServiceImpl implements UserService {
                 .setEmail(request.getEmail()));
 
         userRepository.save(user);
+        notificationClient.notify(new MessageDto()
+                .setRecipient(new MessageDto.Recipient()
+                        .setFirstName(request.getName())
+                        .setLastName(request.getSurname())
+                        .setEmail(request.getEmail())
+                )
+                .setCaption("Спасибо за регистрацию")
+                .setMessage("Пользователь "+request.getLogin()+" был успешно создан!"));
     }
 
     public void updateAccount(AccountDto accountDto, String login) {
@@ -55,7 +70,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    // Add this methods in Step #13
+
     public boolean authenticate(AuthenticationRequest request) {
         User user = userRepository.findByLogin(request.getLogin()).orElseThrow(() -> new UsernameNotFoundException("Authentication failed"));
         return passwordEncoder.matches(request.getPassword(), user.getPassword());

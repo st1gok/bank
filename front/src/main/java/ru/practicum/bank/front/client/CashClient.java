@@ -13,12 +13,13 @@ import ru.practicum.bank.front.domain.CashAction;
 @RefreshScope
 public class CashClient {
 
-    @Value("${cash.host}")
-    String host;
+//    @Value("${cash.host}")
+    private final String host;
 
-    RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    public CashClient(RestTemplate restTemplate) {
+    public CashClient(@Value("${cash.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

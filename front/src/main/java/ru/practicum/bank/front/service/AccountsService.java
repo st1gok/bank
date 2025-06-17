@@ -4,10 +4,9 @@ import ru.practicum.bank.front.domain.AccountModel;
 
 import java.util.List;
 
-
 public interface AccountsService {
     List<AccountModel> getUserAccounts();
     void createAccount(String currency);
     void closeAccount(Long id);
-    public List<AccountModel> getUserAccounts(String username);
+    List<AccountModel> getUserAccounts(String username);
 }

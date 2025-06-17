@@ -1,11 +1,11 @@
 package ru.practicum.bank.account.rest.dto;
 
 public class CashDto {
-    Long account;
-    Double amount;
-    String currency;
-    CashAction action;
-    AccountDto user;
+    private Long account;
+    private Double amount;
+    private String currency;
+    private CashAction action;
+    private AccountDto user;
 
     public AccountDto getUser() {
         return user;

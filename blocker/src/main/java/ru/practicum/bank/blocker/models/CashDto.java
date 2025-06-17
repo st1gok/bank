@@ -1,10 +1,10 @@
 package ru.practicum.bank.blocker.models;
 
 public class CashDto {
-    Long account;
-    Double amount;
-    String currency;
-    CashAction action;
+    private Long account;
+    private Double amount;
+    private String currency;
+    private CashAction action;
 
     public CashAction getAction() {
         return action;

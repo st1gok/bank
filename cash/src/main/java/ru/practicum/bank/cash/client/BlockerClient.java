@@ -13,11 +13,12 @@ import ru.practicum.bank.cash.models.Check;
 @RefreshScope
 public class BlockerClient {
 
-    @Value("${blocker.host}")
-    private String host;
+//    @Value("${blocker.host}")
+    private final String host;
 
-    RestTemplate restTemplate;
-    public BlockerClient(RestTemplate restTemplate) {
+    private final RestTemplate restTemplate;
+    public BlockerClient(@Value("${blocker.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

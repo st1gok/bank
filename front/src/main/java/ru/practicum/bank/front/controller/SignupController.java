@@ -1,8 +1,6 @@
 package ru.practicum.bank.front.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,13 +14,9 @@ import ru.practicum.bank.front.domain.SignupModel;
 import java.util.stream.Collectors;
 
 @Controller()
-@RefreshScope
 public class SignupController {
 
-    @Value("${gateway.host}")
-    private String gatewayHost;
-
-    UserService userService;
+    private final UserService userService;
 
     public SignupController(UserService userService) {
         this.userService = userService;
@@ -38,9 +32,9 @@ public class SignupController {
         if (bindingResult.hasErrors()) {
             String errorParamName = "errors";
             var errorString = bindingResult.getAllErrors().stream().map(error -> errorParamName+"="+error.getDefaultMessage()).collect(Collectors.joining("&"));
-            return "redirect:"+gatewayHost+"/signup?"+ UriUtils.encodePath(errorString, "UTF-8");
+            return "redirect:/signup?"+ UriUtils.encodePath(errorString, "UTF-8");
         }
         userService.registration(signupModel);
-        return "redirect:"+gatewayHost+"/";
+        return "redirect:/";
     }
 }

@@ -1,7 +1,5 @@
 package ru.practicum.bank.transfer.models;
 
-//import jakarta.validation.constraints.Email;
-
 public class Message {
 
     private String caption;

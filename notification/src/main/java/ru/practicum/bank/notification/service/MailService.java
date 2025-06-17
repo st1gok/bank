@@ -10,7 +10,7 @@ import ru.practicum.bank.notification.domain.Message;
 @Service
 public class MailService implements NotificationService {
 
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
 
     @Autowired
     public MailService(JavaMailSender emailSender) {
