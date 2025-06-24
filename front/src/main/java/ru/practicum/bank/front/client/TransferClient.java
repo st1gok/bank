@@ -1,7 +1,6 @@
 package ru.practicum.bank.front.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.bank.front.client.dto.OperationResult;
@@ -9,16 +8,14 @@ import ru.practicum.bank.front.client.dto.TransferDto;
 import ru.practicum.bank.front.client.dto.UserData;
 
 @Component
-@RefreshScope
 public class TransferClient {
 
-//    @Value("${transfer.host}")
-    private final String host;
+    @Value("${transfer.host}")
+    String host;
 
-    private final RestTemplate restTemplate;
+    RestTemplate restTemplate;
 
-    public TransferClient(@Value("${transfer.host}") String host, RestTemplate restTemplate) {
-        this.host = host;
+    public TransferClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

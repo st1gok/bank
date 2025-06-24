@@ -1,7 +1,6 @@
 package ru.practicum.bank.transfer.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -11,15 +10,13 @@ import ru.practicum.bank.transfer.models.OperationResult;
 import ru.practicum.bank.transfer.models.TransferDto;
 
 @Component
-@RefreshScope
 public class AccountClient {
 
-//    @Value("${account.host}")
-    private final String host;
+    @Value("${account.host}")
+    String host;
 
-    private final RestTemplate restTemplate;
-    public AccountClient(@Value("${account.host}") String host, RestTemplate restTemplate) {
-        this.host = host;
+    RestTemplate restTemplate;
+    public AccountClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

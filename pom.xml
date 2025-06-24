@@ -15,7 +15,6 @@
         <module>exchange</module>
         <module>exchange-generator</module>
         <module>front</module>
-        <module>gateway</module>
         <module>notification</module>
         <module>transfer</module>
     </modules>

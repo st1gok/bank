@@ -13,7 +13,7 @@ import java.util.Currency;
 @Controller
 public class MoneyController {
 
-    private final MoneyService moneyService;
+    MoneyService moneyService;
 
     public MoneyController(MoneyService moneyService) {
         this.moneyService = moneyService;

@@ -1,7 +1,6 @@
 package ru.practicum.bank.transfer.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -12,15 +11,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-@RefreshScope
 public class ExchangeClient {
 
-//    @Value("${exchange.host}")
-    private final String host;
+    @Value("${exchange.host}")
+    private String host;
 
-    private final RestTemplate restTemplate;
-    public ExchangeClient(@Value("${exchange.host}") String host, RestTemplate restTemplate) {
-        this.host = host;
+    RestTemplate restTemplate;
+    public ExchangeClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

@@ -1,7 +1,6 @@
 package ru.practicum.bank.front.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.bank.front.client.dto.CashDto;
@@ -10,16 +9,14 @@ import ru.practicum.bank.front.client.dto.UserData;
 import ru.practicum.bank.front.domain.CashAction;
 
 @Component
-@RefreshScope
 public class CashClient {
 
-//    @Value("${cash.host}")
-    private final String host;
+    @Value("${cash.host}")
+    String host;
 
-    private final RestTemplate restTemplate;
+    RestTemplate restTemplate;
 
-    public CashClient(@Value("${cash.host}") String host, RestTemplate restTemplate) {
-        this.host = host;
+    public CashClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

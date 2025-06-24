@@ -1,7 +1,9 @@
 package ru.practicum.bank.front.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,11 +20,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated()
-                ).formLogin(customizer ->
-                        customizer
-                                .defaultSuccessUrl("http://localhost:8080")
-                                .failureUrl("http://localhost:8080/login?error"))
-                .logout(customizer -> customizer.logoutSuccessUrl("http://localhost:8080/login?logout"))
+                ).formLogin(Customizer.withDefaults())
+//                ).formLogin(customizer ->
+
+//                        customizer
+//                                .defaultSuccessUrl("http://localhost:8080")
+//                                .failureUrl("http://localhost:8080/login?error"))
+//                .logout(customizer -> customizer.logoutSuccessUrl("http://localhost:8080/login?logout"))
+                .logout(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable());
         return http.build();
     }

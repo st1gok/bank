@@ -1,7 +1,6 @@
 package ru.practicum.bank.front.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -15,15 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-@RefreshScope
 public class AccountClient {
 
-//    @Value("${account.host}")
-    private final String host;
+    @Value("${account.host}")
+    String host;
 
-    private final RestTemplate restTemplate;
-    public AccountClient(@Value("${account.host}") String host, RestTemplate restTemplate) {
-        this.host = host;
+    RestTemplate restTemplate;
+    public AccountClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
