@@ -1,0 +1,235 @@
+# Global values (if any)
+global:
+  domain: kubernetes.docker.internal # Example domain for ingress
+
+# Configuration for the customer-service subchart
+# NOTE: For local development (Minikube/Kind/Docker Desktop), build the image locally
+# (e.g., `docker build -t customer-service:0.0.1-SNAPSHOT .` in customer-service dir)
+# and ensure your K8s cluster can access local images (e.g., `minikube docker-env` or `kind load docker-image ...`).
+account-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-account-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080
+  # Database connection details passed to customer-service configmap
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  config:
+    database_url: "jdbc:postgresql://{{ .Release.Name }}-account-db:5432/accountdb"
+    # Secret reference for password is more secure
+    database_username: "account_user"
+    database_password_secret: "account-secret" # Reference to secret created by DB chart
+    database_password_secret_key: "postgresql-password" # Key within the secret
+
+# Configuration for the order-service subchart
+# NOTE: Build image locally: `docker build -t order-service:0.0.1-SNAPSHOT .` in order-service dir
+exchange-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-exchange-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: LoadBalancer
+    port: 8081
+
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+#    annotations:
+#      kubernetes.io/ingress.class: nginx
+#      nginx.ingress.kubernetes.io/use-regex: "true"
+#      nginx.ingress.kubernetes.io/rewrite-target: /$2
+#    path: /exchange(/|$)(.*)
+#    pathType: ImplementationSpecific
+    hosts:
+      - host: kubernetes.docker.internal # Use global domain or specific
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8081
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8081
+
+blocker-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-blocker-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080 # Different port for order service
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+
+exchange-generator-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-exchange-generator-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080 # Different port for order service
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+
+cash-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-cash-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080 # Different port for order service
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+
+notification-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-notification-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080 # Different port for order service
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+
+transfer-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-transfer-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080 # Different port for order service
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+
+front-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: bank-front-service # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: LoadBalancer
+    port: 8080 # Different port for order service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: kubernetes.docker.internal
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+
+# Configuration for the customer-db (PostgreSQL dependency)
+# Values here are prefixed according to the Bitnami PostgreSQL chart's structure
+# Check the Bitnami chart's values.yaml for all available options
+account-db:
+  enabled: true
+  # Override values from the official postgresql chart
+  auth:
+    database: "accountdb"
+    username: "account_user"
+    # Use existingSecret or provide password (less secure for production)
+    existingSecret: "account-secret" # Name of the secret to use/create
+    secretKeys:
+        userPasswordKey: postgresql-password
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi # Small size for example
+
+keycloak:
+  enabled: true
+  auth:
+    existingSecret: keycloak-secret
+    passwordSecretKey: admin-password
+    adminUser: admin
+  extraEnvVars:
+    - name: KEYCLOAK_EXTRA_ARGS
+      value: --import-realm /opt/keycloak/data/import/realm-export.json
+  extraVolumes:
+    - name: realm-secret
+      secret:
+        secretName: realm-secret
+  extraVolumeMounts:
+    - name: realm-secret
+      mountPath: "/opt/bitnami/keycloak/data/import/"
+      readOnly: true

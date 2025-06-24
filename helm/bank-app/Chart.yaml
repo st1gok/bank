@@ -1,0 +1,66 @@
+apiVersion: v2
+name: bank-app
+description: A Helm chart for Kubernetes
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.16.0"
+
+dependencies:
+  - name: postgresql
+    version: "16.7.13" # Using a specific known stable version from Bitnami history
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: account-db # Alias to distinguish this instance
+    condition: account-db.enabled # Allow disabling if needed
+  - name: keycloak
+    version: 24.7.4 # Using a specific known stable version from Bitnami history
+    repository: https://charts.bitnami.com/bitnami
+  - name: bank-account-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-account-service" # Local path reference
+    alias: account-service
+  - name: bank-blocker-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-blocker-service" # Local path reference
+    alias: blocker-service
+  - name: bank-cash-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-cash-service" # Local path reference
+    alias: cash-service
+  - name: bank-exchange-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-exchange-service" # Local path reference
+    alias: exchange-service
+  - name: bank-exchange-generator-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-exchange-generator-service" # Local path reference
+    alias: exchange-generator-service
+  - name: bank-front-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-front-service" # Local path reference
+    alias: front-service
+  - name: bank-notification-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-notification-service" # Local path reference
+    alias: notification-service
+  - name: bank-transfer-service
+    version: "0.1.0"
+    repository: "file://./charts/bank-transfer-service" # Local path reference
+    alias: transfer-service
