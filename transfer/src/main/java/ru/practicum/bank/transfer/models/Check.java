@@ -1,8 +1,8 @@
 package ru.practicum.bank.transfer.models;
 
 public class Check {
-    Boolean blockResult;
-    String description;
+    private Boolean blockResult;
+    private String description;
 
     public Boolean getBlockResult() {
         return blockResult;

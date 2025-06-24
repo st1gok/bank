@@ -1,7 +1,6 @@
 package ru.practicum.bank.cash.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -10,10 +9,8 @@ import ru.practicum.bank.cash.models.CashDto;
 import ru.practicum.bank.cash.models.Check;
 
 @Component
-@RefreshScope
 public class BlockerClient {
 
-//    @Value("${blocker.host}")
     private final String host;
 
     private final RestTemplate restTemplate;

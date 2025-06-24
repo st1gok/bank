@@ -12,11 +12,11 @@ import ru.practicum.bank.transfer.models.TransferDto;
 @Component
 public class AccountClient {
 
-    @Value("${account.host}")
-    String host;
+    private final String host;
 
-    RestTemplate restTemplate;
-    public AccountClient(RestTemplate restTemplate) {
+    private final RestTemplate restTemplate;
+    public AccountClient(@Value("${account.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

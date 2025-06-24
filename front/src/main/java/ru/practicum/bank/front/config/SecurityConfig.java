@@ -1,6 +1,5 @@
 package ru.practicum.bank.front.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -21,12 +20,6 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(Customizer.withDefaults())
-//                ).formLogin(customizer ->
-
-//                        customizer
-//                                .defaultSuccessUrl("http://localhost:8080")
-//                                .failureUrl("http://localhost:8080/login?error"))
-//                .logout(customizer -> customizer.logoutSuccessUrl("http://localhost:8080/login?logout"))
                 .logout(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable());
         return http.build();

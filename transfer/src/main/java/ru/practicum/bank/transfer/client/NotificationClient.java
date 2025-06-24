@@ -8,11 +8,11 @@ import ru.practicum.bank.transfer.models.Message;
 @Component
 public class NotificationClient {
 
-    @Value("${notification.host}")
-    private String host;
+    private final String host;
 
-    RestTemplate restTemplate;
-    public NotificationClient(RestTemplate restTemplate) {
+    private final RestTemplate restTemplate;
+    public NotificationClient(@Value("${notification.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

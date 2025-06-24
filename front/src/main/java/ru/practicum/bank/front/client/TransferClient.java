@@ -10,12 +10,12 @@ import ru.practicum.bank.front.client.dto.UserData;
 @Component
 public class TransferClient {
 
-    @Value("${transfer.host}")
-    String host;
+    private final String host;
 
-    RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    public TransferClient(RestTemplate restTemplate) {
+    public TransferClient(@Value("${transfer.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

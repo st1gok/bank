@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Controller
 public class UserController {
 
-    UserService userService;
+    private final UserService userService;
     private final AccountsService accountService;
 
     public UserController(UserService userService, AccountsService accountService) {

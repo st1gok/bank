@@ -10,12 +10,12 @@ import java.util.List;
 @Component
 public class ExchangeClient {
 
-    @Value("${exchange.host}")
-    private String host;
+    private final String host;
 
     private final RestTemplate restTemplate;
 
-    public ExchangeClient(RestTemplate restTemplate) {
+    public ExchangeClient(@Value("${exchange.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

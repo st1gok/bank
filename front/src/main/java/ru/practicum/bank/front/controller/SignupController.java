@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Controller()
 public class SignupController {
 
-    UserService userService;
+    private final UserService userService;
 
     public SignupController(UserService userService) {
         this.userService = userService;

@@ -11,11 +11,12 @@ import ru.practicum.bank.transfer.models.TransferDto;
 @Component
 public class BlockerClient {
 
-    RestTemplate restTemplate;
-    @Value("${blocker.host}")
+    private final RestTemplate restTemplate;
+
     private String host;
 
-    public BlockerClient(RestTemplate restTemplate) {
+    public BlockerClient(@Value("${blocker.host}") String host, RestTemplate restTemplate) {
+        this.host = host;
         this.restTemplate = restTemplate;
     }
 

@@ -1,17 +1,14 @@
 package ru.practicum.bank.cash.client;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.bank.cash.models.CashDto;
 import ru.practicum.bank.cash.models.OperationResult;
 
 @Component
-@RefreshScope
 public class AccountClient {
 
-//    @Value("${account.host}")
     private final String host;
 
     private final RestTemplate restTemplate;
