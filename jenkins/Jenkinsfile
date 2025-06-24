@@ -42,8 +42,8 @@ pipeline {
             }
         }
 
-        stage('Push Docker Images') {
-            steps {
+//         stage('Push Docker Images') {
+//             steps {
 //                 withCredentials([string(credentialsId: 'GHCR_TOKEN', variable: 'GHCR_TOKEN')]) {
 //                     sh """
 //                     echo \$GHCR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
@@ -51,8 +51,8 @@ pipeline {
 //                     docker push ${DOCKER_REGISTRY}/order-service:${IMAGE_TAG}
 //                     """
 //                 }
-            }
-        }
+//             }
+//         }
 
 //         stage('Install PostgreSQL to TEST') {
 //             steps {
