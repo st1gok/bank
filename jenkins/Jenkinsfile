@@ -48,9 +48,12 @@ pipeline {
         stage('Create DB Secrets for TEST') {
             steps {
                 sh """
+                kubectl delete secret realm-secret -n test --ignore-not-found
+                kubectl delete secret keycloak-secret -n test --ignore-not-found
+                kubectl delete secret account-secret -n test --ignore-not-found
                 kubectl create secret generic realm-secret --from-file=./realms/realm-export.json -n test
-                kubectl create secret generic keycloak-secret --from-literal=admin-password=admin -n test --dry-run -o yaml | kubectl apply -f -
-                kubectl create secret generic account-secret --from-literal=postgresql-password=PASSWORD -n test --dry-run -o yaml | kubectl apply -f -
+                kubectl create secret generic keycloak-secret --from-literal=admin-password=${DB_PASSWORD} -n test --dry-run -o yaml | kubectl apply -f -
+                kubectl create secret generic account-secret --from-literal=postgresql-password=${DB_PASSWORD} -n test --dry-run -o yaml | kubectl apply -f -
                 """
             }
         }
@@ -81,24 +84,15 @@ pipeline {
             }
         }
 
-        stage('Install PostgreSQL to PROD') {
-            steps {
-                dir('helm/bank-app') {
-                    sh """
-                    helm upgrade --install bankapp . \\
-                    --namespace prod --create-namespace \\
-                    --set image.tag=${IMAGE_TAG}
-                    """
-                }
-            }
-        }
-
         stage('Create DB Secrets for PROD') {
             steps {
                 sh """
-                kubectl create secret generic realm-secret --from-file=./realms/realm-export.json -n test
-                kubectl create secret generic keycloak-secret --from-literal=admin-password=admin -n test --dry-run -o yaml | kubectl apply -f -
-                kubectl create secret generic account-secret --from-literal=postgresql-password=PASSWORD -n test --dry-run -o yaml | kubectl apply -f -
+                kubectl delete secret realm-secret -n prod --ignore-not-found
+                kubectl delete secret keycloak-secret -n prod --ignore-not-found
+                kubectl delete secret account-secret -n prod --ignore-not-found
+                kubectl create secret generic realm-secret --from-file=./realms/realm-export.json -n prod
+                kubectl create secret generic keycloak-secret --from-literal=admin-password=${DB_PASSWORD} -n prod --dry-run -o yaml | kubectl apply -f -
+                kubectl create secret generic account-secret --from-literal=postgresql-password=${DB_PASSWORD} -n prod --dry-run -o yaml | kubectl apply -f -
                 """
             }
         }
