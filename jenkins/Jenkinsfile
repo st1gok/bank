@@ -12,21 +12,11 @@ pipeline {
 
     stages {
         stage('Build & Unit Tests') {
-            parallel {
                 stage('Bank app') {
                     steps {
-//                         dir('customer-service') {
                             sh 'mvn clean install'
-//                         }
                     }
                 }
-//                 stage('Order Service') {
-//                     steps {
-//                         dir('order-service') {
-//                             sh 'mvn clean test'
-//                         }
-//                     }
-//                 }
             }
         }
 
@@ -34,11 +24,14 @@ pipeline {
             steps {
                 sh """
                 docker build -t bank-account-service:${IMAGE_TAG} account
+                docker build -t bank-blocker-service:${IMAGE_TAG} blocker
+                docker build -t bank-cash-service:${IMAGE_TAG} cash
+                docker build -t bank-exchange-service:${IMAGE_TAG} exchange
+                docker build -t bank-exchange-generator-service:${IMAGE_TAG} exchange-generator
+                docker build -t bank-front-service:${IMAGE_TAG} front
+                docker build -t bank-notification-service:${IMAGE_TAG} notification
+                docker build -t bank-transfer-service:${IMAGE_TAG} transfer
                 """
-//                 sh """
-//                 docker build -t ${DOCKER_REGISTRY}/customer-service:${IMAGE_TAG} customer-service
-//                 docker build -t ${DOCKER_REGISTRY}/order-service:${IMAGE_TAG} order-service
-//                 """
             }
         }
 
@@ -54,58 +47,35 @@ pipeline {
 //             }
 //         }
 
-//         stage('Install PostgreSQL to TEST') {
-//             steps {
-//                 sh """
-//                 helm repo add bitnami https://charts.bitnami.com/bitnami
-//                 helm repo update
-//
-//                 helm upgrade --install postgres bitnami/postgresql \\
-//                   --namespace test --create-namespace \\
-//                   --set auth.database=${DB_NAME} \\
-//                   --set auth.username=${DB_USER} \\
-//                   --set auth.password=${DB_PASSWORD}
-//                 """
-//             }
-//         }
-
         stage('Create DB Secrets for TEST') {
             steps {
                 sh """
-                kubectl create secret generic customer-service-customer-db \\
-                  --from-literal=password=${DB_PASSWORD} \\
-                  -n test --dry-run=client -o yaml | kubectl apply -f -
-
-                kubectl create secret generic order-service-order-db \\
-                  --from-literal=password=${DB_PASSWORD} \\
-                  -n test --dry-run=client -o yaml | kubectl apply -f -
+                kubectl create secret generic realm-secret --from-file=./realms/realm-export.json -n test
+                kubectl create secret generic keycloak-secret --from-literal=admin-password=admin -n test --dry-run -o yaml | kubectl apply -f -
+                kubectl create secret generic account-secret --from-literal=postgresql-password=PASSWORD -n test --dry-run -o yaml | kubectl apply -f -
                 """
             }
         }
 
-//         stage('Helm Deploy to TEST') {
-//             steps {
-//                 sh """
-//                 helm upgrade --install customer-service my-microservices-app/charts/customer-service \\
-//                   --namespace test --create-namespace \\
-//                   --set image.repository=${DOCKER_REGISTRY}/customer-service \\
-//                   --set image.tag=${IMAGE_TAG} \\
-//                   --set ingress.enabled=true \\
-//                   --set ingress.hosts[0].host=customer.test.local \\
-//                   --set ingress.hosts[0].paths[0].path="/" \\
-//                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
-//
-//                 helm upgrade --install order-service my-microservices-app/charts/order-service \\
-//                   --namespace test --create-namespace \\
-//                   --set image.repository=${DOCKER_REGISTRY}/order-service \\
-//                   --set image.tag=${IMAGE_TAG} \\
-//                   --set ingress.enabled=true \\
-//                   --set ingress.hosts[0].host=order.test.local \\
-//                   --set ingress.hosts[0].paths[0].path="/" \\
-//                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
-//                 """
-//             }
-//         }
+        stage('Helm Deploy to TEST') {
+            steps {
+                dir('helm/bank-app') {
+                    sh """
+                    helm dependencies build
+                    helm upgrade --install bankapp . \\
+                    --namespace test --create-namespace \\
+                    --set account-service.image.tag=${IMAGE_TAG} \\
+                    --set front-service.image.tag=${IMAGE_TAG} \\
+                    --set cash-service.image.tag=${IMAGE_TAG} \\
+                    --set blocker-service.image.tag=${IMAGE_TAG} \\
+                    --set exchange-service.image.tag=${IMAGE_TAG} \\
+                    --set exchange-generator-service.image.tag=${IMAGE_TAG} \\
+                    --set notification-service.image.tag=${IMAGE_TAG} \\
+                    --set transfer-service.image.tag=${IMAGE_TAG}
+                    """
+                }
+            }
+        }
 
         stage('Manual Approval for PROD') {
             steps {
@@ -113,54 +83,45 @@ pipeline {
             }
         }
 
-//         stage('Install PostgreSQL to PROD') {
-//             steps {
-//                 sh """
-//                 helm upgrade --install postgres bitnami/postgresql \\
-//                   --namespace prod --create-namespace \\
-//                   --set auth.database=${DB_NAME} \\
-//                   --set auth.username=${DB_USER} \\
-//                   --set auth.password=${DB_PASSWORD}
-//                 """
-//             }
-//         }
+        stage('Install PostgreSQL to PROD') {
+            steps {
+                dir('helm/bank-app') {
+                    sh """
+                    helm upgrade --install bankapp . \\
+                    --namespace prod --create-namespace \\
+                    --set image.tag=${IMAGE_TAG}
+                    """
+                }
+            }
+        }
 
-//         stage('Create DB Secrets for PROD') {
-//             steps {
-//                 sh """
-//                 kubectl create secret generic customer-service-customer-db \\
-//                   --from-literal=password=${DB_PASSWORD} \\
-//                   -n prod --dry-run=client -o yaml | kubectl apply -f -
-//
-//                 kubectl create secret generic order-service-order-db \\
-//                   --from-literal=password=${DB_PASSWORD} \\
-//                   -n prod --dry-run=client -o yaml | kubectl apply -f -
-//                 """
-//             }
-//         }
+        stage('Create DB Secrets for PROD') {
+            steps {
+                sh """
+                kubectl create secret generic realm-secret --from-file=./realms/realm-export.json -n test
+                kubectl create secret generic keycloak-secret --from-literal=admin-password=admin -n test --dry-run -o yaml | kubectl apply -f -
+                kubectl create secret generic account-secret --from-literal=postgresql-password=PASSWORD -n test --dry-run -o yaml | kubectl apply -f -
+                """
+            }
+        }
 
-//         stage('Helm Deploy to PROD') {
-//             steps {
-//                 sh """
-//                 helm upgrade --install customer-service my-microservices-app/charts/customer-service \\
-//                   --namespace prod --create-namespace \\
-//                   --set image.repository=${DOCKER_REGISTRY}/customer-service \\
-//                   --set image.tag=${IMAGE_TAG} \\
-//                   --set ingress.enabled=true \\
-//                   --set ingress.hosts[0].host=customer.prod.local \\
-//                   --set ingress.hosts[0].paths[0].path="/" \\
-//                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
-//
-//                 helm upgrade --install order-service my-microservices-app/charts/order-service \\
-//                   --namespace prod --create-namespace \\
-//                   --set image.repository=${DOCKER_REGISTRY}/order-service \\
-//                   --set image.tag=${IMAGE_TAG} \\
-//                   --set ingress.enabled=true \\
-//                   --set ingress.hosts[0].host=order.prod.local \\
-//                   --set ingress.hosts[0].paths[0].path="/" \\
-//                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
-//                 """
-//             }
-//         }
+        stage('Helm Deploy to PROD') {
+            steps {
+                dir('helm/bank-app') {
+                    sh """
+                    helm upgrade --install bankapp . \\
+                    --namespace prod --create-namespace \\
+                    --set account-service.image.tag=${IMAGE_TAG} \\
+                    --set front-service.image.tag=${IMAGE_TAG} \\
+                    --set cash-service.image.tag=${IMAGE_TAG} \\
+                    --set blocker-service.image.tag=${IMAGE_TAG} \\
+                    --set exchange-service.image.tag=${IMAGE_TAG} \\
+                    --set exchange-generator-service.image.tag=${IMAGE_TAG} \\
+                    --set notification-service.image.tag=${IMAGE_TAG} \\
+                    --set transfer-service.image.tag=${IMAGE_TAG}
+                    """
+                }
+            }
+        }
     }
 }
