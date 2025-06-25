@@ -12,11 +12,10 @@ pipeline {
 
     stages {
         stage('Build & Unit Tests') {
-                stage('Bank app') {
-                    steps {
-                            sh 'mvn clean install'
-                    }
-                }
+           steps {
+                sh 'mvn clean install'
+           }
+
         }
 
         stage('Build Docker Images') {
