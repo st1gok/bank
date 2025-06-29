@@ -3,10 +3,7 @@ package ru.practicum.bank.transfer.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import ru.practicum.bank.transfer.client.AccountClient;
-import ru.practicum.bank.transfer.client.BlockerClient;
-import ru.practicum.bank.transfer.client.ExchangeClient;
-import ru.practicum.bank.transfer.client.NotificationClient;
+import ru.practicum.bank.transfer.client.*;
 import ru.practicum.bank.transfer.models.*;
 
 import java.util.Map;

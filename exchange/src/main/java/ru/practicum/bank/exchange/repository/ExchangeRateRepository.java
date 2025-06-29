@@ -8,5 +8,7 @@ public interface ExchangeRateRepository {
     Rate getExchangeRate(String currency);
     void saveAll(List<Rate> rates);
 
+    void save(Rate rate);
+
     List<Rate> getRates();
 }

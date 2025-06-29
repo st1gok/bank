@@ -25,4 +25,9 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     public Rate getExchangeRate(String currency) {
         return exchangeRates.get(currency);
     }
+
+    @Override
+    public void save(Rate rate) {
+        this.exchangeRates.put(rate.getName(), rate);
+    }
 }

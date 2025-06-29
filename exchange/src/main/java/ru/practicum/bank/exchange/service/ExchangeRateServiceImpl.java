@@ -29,4 +29,9 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     public void save(List<Rate> rates) {
         exchangeRateRepository.saveAll(rates);
     }
+
+    @Override
+    public void save(Rate rate) {
+        exchangeRateRepository.save(rate);
+    }
 }

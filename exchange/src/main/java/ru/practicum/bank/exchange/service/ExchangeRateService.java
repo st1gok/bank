@@ -10,5 +10,7 @@ public interface ExchangeRateService {
     Rate getRate(String currency);
 
     void save(List<Rate> rates);
+
+    void save(Rate rate);
 }
 
