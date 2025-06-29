@@ -126,3 +126,5 @@ config:
   database_username: "myuser"
   keycloak_uri: "http://bankapp-keycloak.{{ .Release.Namespace }}.svc.cluster.local/realms/intershop"
   notification_host: "http://bankapp-notification-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
+  kafka_server: "bankapp-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  notification_topic_name: "messages"

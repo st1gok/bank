@@ -127,3 +127,5 @@ config:
   notification_host: "http://bankapp-notification-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
   account_host: "http://bankapp-account-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
   blocker_host: "http://bankapp-blocker-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
+  kafka_server: "kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  notification_topic_name: "messages"

@@ -22,6 +22,8 @@ data:
   NOTIFICATION_HOST: {{ tpl .Values.config.notification_host . | quote }}
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI: {{ tpl .Values.config.keycloak_uri . | quote }}
   SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER-URI: {{ tpl .Values.config.keycloak_uri . | quote }}
+  SPRING_KAFKA_BOOTSTRAP-SERVERS: {{ tpl .Values.config.kafka_server . | quote }}
+  TOPIC_NAME: {{ tpl .Values.config.notification_topic_name . | quote }}
   # SPRING_DATASOURCE_PASSWORD would typically come from a secret, not this ConfigMap.
 
   # Example: Include other config defined in values.yaml

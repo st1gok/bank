@@ -32,6 +32,7 @@ account-service:
     database_username: "account_user"
     database_password_secret: "account-secret" # Reference to secret created by DB chart
     database_password_secret_key: "postgresql-password" # Key within the secret
+    kafka_server: "bankapp-kafka:9092"
 
 # Configuration for the order-service subchart
 # NOTE: Build image locally: `docker build -t order-service:0.0.1-SNAPSHOT .` in order-service dir
@@ -69,6 +70,8 @@ exchange-service:
     httpGet:
       path: /actuator/health
       port: 8081
+  config:
+    kafka_server: "bankapp-kafka:9092"
 
 blocker-service:
   replicaCount: 1
@@ -109,6 +112,8 @@ exchange-generator-service:
     httpGet:
       path: /actuator/health
       port: 8080
+  config:
+    kafka_server: "bankapp-kafka:9092"
 
 cash-service:
   replicaCount: 1
@@ -129,6 +134,8 @@ cash-service:
     httpGet:
       path: /actuator/health
       port: 8080
+  config:
+    kafka_server: "bankapp-kafka:9092"
 
 notification-service:
   replicaCount: 1
@@ -149,6 +156,8 @@ notification-service:
     httpGet:
       path: /actuator/health
       port: 8080
+  config:
+    kafka_server: "bankapp-kafka:9092"
 
 transfer-service:
   replicaCount: 1
@@ -169,6 +178,8 @@ transfer-service:
     httpGet:
       path: /actuator/health
       port: 8080
+  config:
+    kafka_server: "bankapp-kafka:9092"
 
 front-service:
   replicaCount: 1
@@ -233,3 +244,11 @@ keycloak:
     - name: realm-secret
       mountPath: "/opt/bitnami/keycloak/data/import/"
       readOnly: true
+
+kafka:
+  enabled: true
+  listeners:
+    client:
+      protocol: PLAINTEXT
+    interbroker:
+      protocol: PLAINTEXT

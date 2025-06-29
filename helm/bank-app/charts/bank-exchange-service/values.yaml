@@ -124,3 +124,5 @@ affinity: {}
 
 config:
   keycloak_uri: "http://bankapp-keycloak.{{ .Release.Namespace }}.svc.cluster.local/realms/intershop"
+  kafka_server: "bankapp-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  rates_topic_name: "exchange-rates"

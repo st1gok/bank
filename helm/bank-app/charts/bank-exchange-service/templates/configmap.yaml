@@ -18,6 +18,8 @@ data:
   # Note: The values come from .Values.config which are set by the umbrella chart.
   # Use the 'tpl' function to render the database_url which contains Helm templating itself
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI: {{ tpl .Values.config.keycloak_uri . | quote }}
+  SPRING_KAFKA_BOOTSTRAP-SERVERS: {{ tpl .Values.config.kafka_server . | quote }}
+  TOPIC_NAME: {{ tpl .Values.config.rates_topic_name . | quote }}
   # SPRING_DATASOURCE_PASSWORD would typically come from a secret, not this ConfigMap.
 
   # Example: Include other config defined in values.yaml

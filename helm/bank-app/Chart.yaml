@@ -64,3 +64,6 @@ dependencies:
     version: "0.1.0"
     repository: "file://./charts/bank-transfer-service" # Local path reference
     alias: transfer-service
+  - name: kafka
+    version: 32.3.0    # Using a specific known stable version from Bitnami history
+    repository: https://charts.bitnami.com/bitnami

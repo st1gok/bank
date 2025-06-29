@@ -132,3 +132,5 @@ config:
   account_host: "http://bankapp-account-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
   blocker_host: "http://bankapp-blocker-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
   exchange_host: "http://bankapp-exchange-service.{{ .Release.Namespace }}.svc.cluster.local:8081"
+  kafka_server: "kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  notification_topic_name: "messages"

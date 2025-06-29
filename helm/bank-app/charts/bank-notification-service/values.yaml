@@ -124,3 +124,5 @@ affinity: {}
 
 config:
   keycloak_uri: "http://bankapp-keycloak.{{ .Release.Namespace }}.svc.cluster.local/realms/intershop"
+  kafka_server: "kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+  notification_topic_name: "messages"
