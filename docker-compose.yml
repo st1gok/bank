@@ -1,168 +1,170 @@
 services:
-  front:
-    image: bank/front
-    build:
-      context: front
-      dockerfile: ./Dockerfile
-    ports:
-      - 8080:8079
-    environment:
-      - spring.cloud.consul.host=consul
-      - spring.cloud.config.enabled=true
-      - spring.cloud.consul.config.enabled=true
-      - spring.cloud.consul.discovery.enabled=true
-      - spring.cloud.consul.discovery.register=true
-    depends_on:
-      - consul
-      - keycloak
-      - account
-      - cash
-      - transfer
+#  front:
+#    image: bank/front
+#    build:
+#      context: front
+#      dockerfile: ./Dockerfile
+#    ports:
+#      - 8080:8080
+#    environment:
+##      - spring.cloud.consul.host=consul
+##      - spring.cloud.config.enabled=true
+##      - spring.cloud.consul.config.enabled=true
+##      - spring.cloud.consul.discovery.enabled=true
+##      - spring.cloud.consul.discovery.register=true
+#    depends_on:
+#      - keycloak
+#      - account
+#      - cash
+#      - transfer
 
-  account:
-    image: bank/account
-    build:
-      context: account
-      dockerfile: ./Dockerfile
-    environment:
-      - spring.cloud.consul.host=consul
-      - spring.cloud.config.enabled=true
-      - spring.cloud.consul.config.enabled=true
-      - spring.cloud.consul.discovery.enabled=true
-      - spring.cloud.consul.discovery.register=true
-    depends_on:
-      - consul
-      - notification
-      - keycloak
-      - db
+#  account:
+#    image: bank/account
+#    build:
+#      context: account
+#      dockerfile: ./Dockerfile
+#    environment:
+##      - spring.cloud.consul.host=consul
+##      - spring.cloud.config.enabled=true
+##      - spring.cloud.consul.config.enabled=true
+##      - spring.cloud.consul.discovery.enabled=true
+##      - spring.cloud.consul.discovery.register=true
+#    depends_on:
+#      - notification
+#      - keycloak
+#      - db
 
-  gateway:
-    image: bank/gateway
-    build:
-      context: gateway
-      dockerfile: ./Dockerfile
-    ports:
-      - 8081:8080
-    environment:
-      - spring.cloud.consul.host=consul
-    depends_on:
-      - consul
-      - keycloak
-      - front
+#  gateway:
+#    image: bank/gateway
+#    build:
+#      context: gateway
+#      dockerfile: ./Dockerfile
+#    ports:
+#      - 8081:8080
+#    environment:
+##      - spring.cloud.consul.host=consul
+#    depends_on:
+#      - keycloak
+#      - front
 
-  cash:
-    image: bank/cash
-    build:
-      context: cash
-      dockerfile: ./Dockerfile
-    environment:
-      - spring.cloud.consul.host=consul
-      - spring.cloud.config.enabled=true
-      - spring.cloud.consul.config.enabled=true
-      - spring.cloud.consul.discovery.enabled=true
-      - spring.cloud.consul.discovery.register=true
-    depends_on:
-      - consul
-      - keycloak
-      - account
-      - notification
-      - blocker
+#  cash:
+#    image: bank/cash
+#    build:
+#      context: cash
+#      dockerfile: ./Dockerfile
+#    environment:
+##      - spring.cloud.consul.host=consul
+##      - spring.cloud.config.enabled=true
+##      - spring.cloud.consul.config.enabled=true
+##      - spring.cloud.consul.discovery.enabled=true
+##      - spring.cloud.consul.discovery.register=true
+#    depends_on:
+#      - keycloak
+#      - account
+#      - notification
+#      - blocker
 
-  blocker:
-    image: bank/blocker
-    build:
-      context: blocker
-      dockerfile: ./Dockerfile
-    environment:
-      - spring.cloud.consul.host=consul
-    depends_on:
-      - consul
-      - keycloak
+#  blocker:
+#    image: bank/blocker
+#    build:
+#      context: blocker
+#      dockerfile: ./Dockerfile
+#    environment:
+#      - spring.cloud.consul.host=consul
+#    depends_on:
+#      - keycloak
 
   exchange:
     image: bank/exchange
     build:
       context: exchange
       dockerfile: ./Dockerfile
+    ports:
+      - 8081:8081
     environment:
-      - spring.cloud.consul.host=consul
+      - spring.kafka.bootstrap-servers=kafka:9092
+#      - spring.kafka.consumer.properties.spring.json.trusted.packages=*
+#      - spring.kafka.consumer.properties.spring.json.type.mapping=ru.practicum.bank.exchange_generator.domain.Rate:ru.practicum.bank.exchange.domain.Rate
+#      - spring.cloud.consul.host=consul
     depends_on:
-      - consul
-      - exchange-generator
-      - keycloak
+      keycloak:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
 
   exchange-generator:
     image: bank/exchange-generator
     build:
       context: exchange-generator
       dockerfile: ./Dockerfile
-    environment:
-      - spring.cloud.consul.host=consul
-      - spring.cloud.config.enabled=true
-      - spring.cloud.consul.config.enabled=true
-    depends_on:
-      - consul
-      - keycloak
-
-  notification:
-    image: bank/notification
-    build:
-      context: notification
-      dockerfile: ./Dockerfile
-    environment:
-      - spring.cloud.consul.host=consul
-    depends_on:
-      - consul
-      - keycloak
-
-  transfer:
-    image: bank/transfer
-    build:
-      context: transfer
-      dockerfile: ./Dockerfile
-    environment:
-      - spring.cloud.consul.host=consul
-      - spring.cloud.config.enabled=true
-    depends_on:
-      - consul
-      - keycloak
-      - account
-      - notification
-      - blocker
-      - exchange
-
-  consul:
-    image: hashicorp/consul:1.21
-    container_name: consul
-    volumes:
-      - ./consul-volume:/consul/data
-    ports:
-      - 8500:8500
-    command: 'agent -server -bootstrap-expect=1 -ui -bind=0.0.0.0 -client=0.0.0.0'
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8500/v1/status/leader" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+#    environment:
+#      - spring.kafka.bootstrap-servers=kafka:9092
+#      - spring.cloud.consul.host=consul
+#      - spring.cloud.config.enabled=true
+#      - spring.cloud.consul.config.enabled=true
     depends_on:
       keycloak:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
 
-  db:
-    image: postgres:17-bullseye
-    container_name: db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: account
-      PGDATA: /var/lib/postgresql/data/pgdata
-    volumes:
-        - ./pgdata:/var/lib/postgresql/data/pgdata
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres_user -d postgres_db" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+#  notification:
+#    image: bank/notification
+#    build:
+#      context: notification
+#      dockerfile: ./Dockerfile
+#    environment:
+#      - spring.cloud.consul.host=consul
+#    depends_on:
+#      - keycloak
+
+#  transfer:
+#    image: bank/transfer
+#    build:
+#      context: transfer
+#      dockerfile: ./Dockerfile
+#    environment:
+#      - spring.cloud.consul.host=consul
+#      - spring.cloud.config.enabled=true
+#    depends_on:
+#      - keycloak
+#      - account
+#      - notification
+#      - blocker
+#      - exchange
+
+#  consul:
+#    image: hashicorp/consul:1.21
+#    container_name: consul
+#    volumes:
+#      - ./consul-volume:/consul/data
+#    ports:
+#      - 8500:8500
+#    command: 'agent -server -bootstrap-expect=1 -ui -bind=0.0.0.0 -client=0.0.0.0'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8500/v1/status/leader" ]
+#      interval: 5s
+#      timeout: 3s
+#      retries: 10
+#    depends_on:
+#      keycloak:
+#        condition: service_healthy
+
+#  db:
+#    image: postgres:17-bullseye
+#    container_name: db
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: account
+#      PGDATA: /var/lib/postgresql/data/pgdata
+#    volumes:
+#        - ./pgdata:/var/lib/postgresql/data/pgdata
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U postgres_user -d postgres_db" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
 
 #  consul-importer:
 #    image: curlimages/curl:latest
@@ -179,6 +181,27 @@ services:
 #           --data-binary @/data/kv.json \
 #           http://consul:8500/v1/kv/config;
 #      echo "Импорт завершен!"'
+
+  kafka:
+    image: apache/kafka:4.0.0
+    container_name: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://localhost:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    healthcheck:
+      test: ["CMD", "nc", "-vz", "kafka", "9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.3

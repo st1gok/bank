@@ -55,6 +55,9 @@ Spring-boot для web приложения
 
 Для оповещения, необходимо настроить учетную запись email через env переменные докер образа notification сервиса
 
+Для обмена сообщениями добавлен сервис Apache Kafka(для отправки сообщений в Notification service 
+и в передаче курсов валют в Exchange service)
+
 для удобства запуска создан docker-compose файл
 
 Добавлен jenkinsfile для CI/CD на билд сервере Jenkins
