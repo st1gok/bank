@@ -1,5 +1,6 @@
 package ru.practicum.bank.transfer.config;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -14,8 +15,8 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateConfig {
 
     @Bean
-    public RestTemplate restTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        RestTemplate restTemplate = new RestTemplate();
+    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder, OAuth2AuthorizedClientManager authorizedClientManager) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
         restTemplate.getInterceptors().add(new OAuth2ClientCredentialsInterceptor(authorizedClientManager));
         return restTemplate;
     }

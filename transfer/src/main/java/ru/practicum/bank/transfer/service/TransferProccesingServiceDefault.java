@@ -1,6 +1,7 @@
 package ru.practicum.bank.transfer.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.practicum.bank.transfer.client.*;
@@ -18,17 +19,20 @@ public class TransferProccesingServiceDefault implements TransferProccesingServi
     private final NotificationClient notificationClient;
     private final ExchangeClient exchangeClient;
     private final ObjectMapper objectMapper;
+    private final MeterRegistry meterRegistry;
 
     public TransferProccesingServiceDefault(AccountClient accountClient,
                                             BlockerClient blockerClient,
                                             NotificationClient notificationClient,
                                             ExchangeClient exchangeClient,
-                                            ObjectMapper objectMapper) {
+                                            ObjectMapper objectMapper,
+                                            MeterRegistry meterRegistry) {
         this.accountClient = accountClient;
         this.blockerClient = blockerClient;
         this.notificationClient = notificationClient;
         this.exchangeClient = exchangeClient;
         this.objectMapper = objectMapper;
+        this.meterRegistry = meterRegistry;
     }
 
     @Override
@@ -47,6 +51,10 @@ public class TransferProccesingServiceDefault implements TransferProccesingServi
                     .setCaption("Операция была заблокирована")
                     .setMessage("Операция показалась подозрительной");
             notificationClient.notify(message);
+            meterRegistry.counter("transfer_failure_total",
+                            "account_from", String.valueOf(transferDto.getFromAccount()),
+                            "account_to", String.valueOf(transferDto.getToAccount()))
+                    .increment();
             return new OperationResult().setErrorMessage("Операция была заблокирована").setStatus(400);
         } else {
             try {
@@ -58,6 +66,10 @@ public class TransferProccesingServiceDefault implements TransferProccesingServi
                 notificationClient.notify(message);
                 return result;
             } catch (HttpClientErrorException e) {
+                meterRegistry.counter("transfer_failure_total",
+                                "account_from", String.valueOf(transferDto.getFromAccount()),
+                                "account_to", String.valueOf(transferDto.getToAccount()))
+                        .increment();
                 return objectMapper.readValue(e.getResponseBodyAsString(), OperationResult.class);
             }
         }
