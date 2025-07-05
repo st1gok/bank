@@ -126,3 +126,4 @@ config:
   keycloak_uri: "http://bankapp-keycloak.{{ .Release.Namespace }}.svc.cluster.local/realms/intershop"
   kafka_server: "kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   notification_topic_name: "messages"
+  zipkin_endpoint: "http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans"

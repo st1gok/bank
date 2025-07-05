@@ -1,0 +1,23 @@
+replicas: 1
+minimumMasterNodes: 1
+#
+#ingress:
+#  enabled: true
+#  hosts:
+#    - host: kubernetes.docker.internal #Change the hostname to the one you need
+#      paths:
+#        - path: /
+
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: false
+    xpack.security.http.ssl.enabled: false
+extraEnvs:
+  - name: xpack.security.enabled
+    value: "false"

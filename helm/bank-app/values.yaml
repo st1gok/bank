@@ -26,6 +26,7 @@ account-service:
     httpGet:
       path: /actuator/health
       port: 8080
+
   config:
     database_url: "jdbc:postgresql://{{ .Release.Name }}-account-db:5432/accountdb"
     # Secret reference for password is more secure

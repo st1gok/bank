@@ -1,0 +1,60 @@
+persistence:
+  enabled: true
+
+logstashConfig:
+  logstash.yml: |
+    http.host: 0.0.0.0
+    xpack.monitoring.enabled: false
+
+logstashPipeline:
+  logstash.conf: |
+    input {
+      kafka {
+        bootstrap_servers => "bankapp-kafka.default.svc.cluster.local:9092"
+        topics => ["bankapp-logs"]
+        group_id => "bankapp-elk-logs"
+        decorate_events => extended
+      }
+    }
+    filter {
+      mutate {
+        copy => { "[@metadata][kafka][topic]" => "source"}
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => "https://elasticsearch-master:9200"
+        user => '${ELASTICSEARCH_USERNAME}'
+        password => '${ELASTICSEARCH_PASSWORD}'
+        cacert => '/usr/share/logstash/config/certs/ca.crt'
+        manage_template => false
+        index => "logs-%{+dd.MM.YYYY}"
+        retry_on_conflict => 3
+        document_type => "%{[@metadata][type]}"
+      }
+    }
+
+extraEnvs:
+  - name: "ELASTICSEARCH_USERNAME"
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-master-credentials
+        key: username
+  - name: "ELASTICSEARCH_PASSWORD"
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-master-credentials
+        key: password
+
+service:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8085
+      protocol: TCP
+      targetPort: 8080
+
+secretMounts:
+  - name: elasticsearch-master-certs
+    secretName: elasticsearch-master-certs
+    path: /usr/share/logstash/config/certs

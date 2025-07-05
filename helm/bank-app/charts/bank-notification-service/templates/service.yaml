@@ -4,6 +4,7 @@ metadata:
   name: {{ include "bank-notification-service.fullname" . }}
   labels:
     {{- include "bank-notification-service.labels" . | nindent 4 }}
+    app: {{ .Chart.Name }}
 spec:
   type: {{ .Values.service.type }}
   ports:

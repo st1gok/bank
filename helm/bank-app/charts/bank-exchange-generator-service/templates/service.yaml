@@ -4,6 +4,7 @@ metadata:
   name: {{ include "bank-exchange-generator-service.fullname" . }}
   labels:
     {{- include "bank-exchange-generator-service.labels" . | nindent 4 }}
+    app: {{ .Chart.Name }}
 spec:
   type: {{ .Values.service.type }}
   ports:

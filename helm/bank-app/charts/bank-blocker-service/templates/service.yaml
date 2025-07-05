@@ -4,6 +4,7 @@ metadata:
   name: {{ include "bank-blocker-service.fullname" . }}
   labels:
     {{- include "bank-blocker-service.labels" . | nindent 4 }}
+    app: {{ .Chart.Name }}
 spec:
   type: {{ .Values.service.type }}
   ports:

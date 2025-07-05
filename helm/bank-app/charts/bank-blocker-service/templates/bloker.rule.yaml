@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: high-blocks-alert
+  namespace: monitoring # Неймспейс, в котором работает Prometheus
+  labels:
+    release: prometheus-stack  # Название релиза Prometheus
+spec:
+  groups:
+    - name: blocker.rules
+      rules:
+        - alert: HighBlockRate
+          expr: sum(rate(blocks_total[1m])) > 5
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Высокое количество подозрительных операций"
+            description: "Количество подозрительных операций увеличилось до 5 в течение последней минуты."

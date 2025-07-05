@@ -58,6 +58,18 @@ pipeline {
             }
         }
 
+        stage('Create monitoring and logging') {
+                    steps {
+                        sh """
+                        helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack  --atomic --wait -n monitoring --create-namespace
+                        helm upgrade --install zipkin bitnami/zipkin  --atomic --wait -n monitoring --create-namespace -f helm/zipkin/values.yaml
+                        helm upgrade --install elasticsearch elastic/elasticsearch --atomic --wait -n logging --create-namespace -f helm/elk/elastic/values.yaml
+                        helm upgrade --install kibana elastic/kibana --atomic --wait -n logging --create-namespace -f helm/elk/kibana/values.yaml
+                        helm upgrade --install logstash elastic/logstash --atomic --wait -n logging --create-namespace -f helm/elk/logstash/values.yaml
+                        """
+                    }
+                }
+
         stage('Helm Deploy to TEST') {
             steps {
                 dir('helm/bank-app') {

@@ -129,3 +129,4 @@ config:
   blocker_host: "http://bankapp-blocker-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
   kafka_server: "kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   notification_topic_name: "messages"
+  zipkin_endpoint: "http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans"
