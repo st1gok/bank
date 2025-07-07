@@ -22,6 +22,7 @@ data:
   CASH_HOST: {{ tpl .Values.config.cash_host . | quote }}
   SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER-URI: {{ tpl .Values.config.keycloak_uri . | quote }}
   MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: {{ tpl .Values.config.zipkin_endpoint . | quote }}
+  SPRING_KAFKA_BOOTSTRAP-SERVERS: {{ tpl .Values.config.kafka_server . | quote }}
 
   # SPRING_DATASOURCE_PASSWORD would typically come from a secret, not this ConfigMap.
 

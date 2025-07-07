@@ -2,10 +2,10 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: [$${ctx:traceId:-}, $${ctx:spanId:-}}]  %msg%n"/>
         </Console>
         <Kafka name="Kafka" topic="bankapp-logs">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: [$${spring.application.name:}, $${ctx:traceId:-}, $${ctx:spanId:-}}]  %msg%n"/>
             <Property name="bootstrap.servers">${env:SPRING_KAFKA_BOOTSTRAP-SERVERS:-localhost:9092}</Property>
         </Kafka>
     </Appenders>

@@ -128,3 +128,4 @@ config:
   transfer_host: "http://bankapp-transfer-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
   cash_host: "http://bankapp-cash-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
   zipkin_endpoint: "http://zipkin.monitoring.svc.cluster.local:9411/api/v2/spans"
+  kafka_server: "bankapp-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
